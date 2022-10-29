@@ -15,18 +15,10 @@ app.use(express.json());
 app.use(authRoutes);
 
 
-app.get("/", (req, res) => {
-  res.send("karaoke GET");
-});
-
-app.post("/", (req, res) => {
-  res.send("karaoke POST");
-});
 
 app.listen(port, () => {
   console.log("server listening port:", port);
 });
 
-// DB connection, attach sequelize instance
 
   

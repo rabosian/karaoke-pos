@@ -18,7 +18,6 @@ db.sequelize = sequelize
 db.models = {}
 db.models.Employee = require('./employee')(sequelize, Sequelize.DataTypes)
 
-
 module.exports = db;
 
 

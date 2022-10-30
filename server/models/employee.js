@@ -22,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
     console.log(`password hashed: ${emp.password}`)
   })
 
-  Employee.sync({ alter: true })
+  Employee.sync()
     .then(() => {
       console.log(">Employee table synced");
     })

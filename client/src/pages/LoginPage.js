@@ -1,17 +1,24 @@
 import React, { useState } from 'react'
+import api from '../redux/api'
 import { Button, Form } from 'react-bootstrap'
 import { useDispatch, useSelector } from "react-redux"
+
 
 const LoginPage = () => {
   const [username, setUsername] = useState();
   const [password, setPassword] = useState();
-  const dispatch = useDispatch()
-  const auth = useSelector((state) => state.auth)
+  // const dispatch = useDispatch()
+  // const auth = useSelector((state) => state.auth)
 
   const handleLogin = () => {
     // dispatch(auth.loginSuccess)
-    console.log(`username ${username}`)
-    console.log(`password ${password}`)
+    api({
+      method: 'post',
+      url: 'login',
+      data: {
+        username, password
+      }
+    }).then((res) => console.log(res))
   }
 
   return (

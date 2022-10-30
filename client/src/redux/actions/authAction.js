@@ -1,3 +1,4 @@
+import api from '../api'
 import { authActions } from '../reducers/authReducer'
 
 function login(username) {

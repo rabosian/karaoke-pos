@@ -1,11 +1,11 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "description": "",
   "main": "server.js",
   "scripts": {
-    "devStart": "nodemon server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon server.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
   },
   "keywords": [],
   "author": "",
@@ -18,10 +18,13 @@
     "express": "^4.18.2",
     "jsonwebtoken": "^8.5.1",
     "nodemon": "^2.0.20",
+    "pg": "^8.8.0",
+    "pg-hstore": "^2.3.4",
     "pg-promise": "^10.12.1",
     "sequelize": "^6.25.3"
   },
   "devDependencies": {
     "dotenv": "^16.0.3"
-  }
+  },
+  "description": ""
 }

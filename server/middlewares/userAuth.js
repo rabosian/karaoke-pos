@@ -8,11 +8,11 @@ const checkUsername = async (req, res, next) => {
     const existUsername = await Employees.findOne({
       where: {
         username: req.body.username,
-      },
+      }
     });
     //if username exist in the database respond with a status of 409
     if (existUsername) {
-      return res.json(409).send("username already taken");
+      return res.status(409).send("username already taken");
     }
 
     next();

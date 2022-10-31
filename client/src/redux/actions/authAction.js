@@ -1,19 +1,29 @@
-import api from '../api'
-import { authActions } from '../reducers/authReducer'
+import api from "../api";
+import { authActions } from "../reducers/authReducer";
 
-function login(username) {
+function login(username, password) {
   return async (dispatch, getState) => {
-    // auth middleware
-
-    dispatch(authActions.loginSuccess(username))
+    try {
+      api({
+        method: "post",
+        url: "/employees/login",
+        data: {
+          username: username,
+          password: password
+        },
+      });
+      console.log(response)
+      dispatch(authActions.loginSuccess(username));
+    } catch (err) {
+      console.error(err);
+    }
   };
 }
 
 function logout() {
   return (dispatch, getState) => {
-    dispatch(authActions.logoutSuccess())
+    dispatch(authActions.logoutSuccess());
   };
 }
-
 
 export const authAction = { login, logout };

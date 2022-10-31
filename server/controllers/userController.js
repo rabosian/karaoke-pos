@@ -9,6 +9,7 @@ const Employees = db.employees;
 const signup = async (req, res) => {
   try {
     const { username, password } = req.body;
+    console.log(username, password);
     const data = {
       username,
       password: await bcrypt.hash(password, 10),
@@ -20,7 +21,7 @@ const signup = async (req, res) => {
     //set cookie with the token generated
     if (employees) {
       let token = jwt.sign({ id: employees.id }, process.env.secretKey, {
-        expiresIn: '24h',
+        expiresIn: "24h",
       });
 
       res.cookie("jwt", token, { maxAge: 1 * 24 * 60 * 60, httpOnly: true });
@@ -35,35 +36,47 @@ const signup = async (req, res) => {
 };
 
 //login authentication
-
 const login = async (req, res) => {
   try {
     const { username, password } = req.body;
 
     //find a username
-    const employees = await Employees.findOne({ username });
-
+    // where: {
+    //   username: req.body.username,
+    // }
+    const employees = await Employees.findOne({
+      where: {
+        username: req.body.username,
+      }
+    });
     //if user is found, compare password with bcrypt
     if (employees) {
-      const isPasswordCorrect = await bcrypt.compare(password, employees.password);
-
+      const isPasswordCorrect = await bcrypt.compare(
+        password,
+        employees.password
+      );
       //if password is the same
       //generate token with the user's id and the secretKey in the env file
       if (isPasswordCorrect) {
         let token = jwt.sign({ id: employees.id }, process.env.secretKey, {
-          expiresIn: 1 * 24 * 60 * 60 * 1000,
+          expiresIn: "24h",
         });
 
         //if password matches wit the one in the database
         //go ahead and generate a cookie for the user
-        res.cookie("jwt", token, { maxAge: 1 * 24 * 60 * 60, httpOnly: true });
+        res.cookie("jwt", token, {
+          maxAge: 1 * 24 * 60 * 60 * 1000,
+          httpOnly: true,
+        });
         //send employees data
-        return res.status(201).send(employees);
+        return res.status(201).json({ message: "Login success" });
       } else {
-        return res.status(401).send("Authentication failed");
+        return res
+          .status(401)
+          .send("Authentication failed, password NOT match");
       }
     } else {
-      return res.status(401).send("Authentication failed");
+      return res.status(401).send("Authentication failed, user NOT found");
     }
   } catch (error) {
     console.log(error);
@@ -79,5 +92,5 @@ const logout = (req, res) => {
 module.exports = {
   signup,
   login,
-  logout
+  logout,
 };

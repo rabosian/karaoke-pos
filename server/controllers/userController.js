@@ -70,7 +70,14 @@ const login = async (req, res) => {
   }
 };
 
+const logout = (req, res) => {
+  // delete jwt from cookie
+  res.cookie("jwt", "", { maxAge: 1 });
+  res.redirect("/");
+};
+
 module.exports = {
   signup,
   login,
+  logout
 };

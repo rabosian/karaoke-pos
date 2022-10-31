@@ -8,6 +8,9 @@ const router = express.Router()
 //signup / login route endpoint
 //passing the middleware function to the signup (checking duplicate username)
 router.post('/signup', userAuth.checkUsername, userController.signup)
-router.post('/login', userController.login )
+router.post('/login', userController.login)
+
+router.get('/logout', userController.logout)
+
 
 module.exports = router

@@ -9,7 +9,10 @@ const PORT = process.env.PORT || 4000;
 const app = express();
 
 //middleware
-app.use(cors());
+app.use(cors({
+  credentials: true,
+  origin: ["http://localhost:3000", "http://localhost:4000"]
+}));
 app.use(cookieParser())
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

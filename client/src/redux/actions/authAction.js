@@ -1,29 +1,35 @@
 import api from "../api";
 import { authActions } from "../reducers/authReducer";
 
-function login(username, password) {
-  return async (dispatch, getState) => {
-    try {
-      api({
-        method: "post",
-        url: "/employees/login",
-        data: {
+module.exports.login = (username, password) => {
+    api
+      .post(
+        "/employees/login",
+        {
           username: username,
-          password: password
+          password: password,
         },
+        { withCredentials: true }
+      )
+      .then((res) => dispatch(authActions.loginSuccess({ username })))
+      .catch((err) => {
+        // work til now
+        // console.log('>>>in action: ', err)
+        // console.log('>>>', err.response.status)
+        if (err.response.status === 401) {
+          // true
+          let error = "username or password incorrect";
+          dispatch(authActions.loginFailed({ error }));
+        } else {
+          dispatch(authActions.loginFailed({ error: err.message }));
+        }
       });
-      console.log(response)
-      dispatch(authActions.loginSuccess(username));
-    } catch (err) {
-      console.error(err);
-    }
   };
 }
 
-function logout() {
+module.exports.logout = () => {
   return (dispatch, getState) => {
     dispatch(authActions.logoutSuccess());
   };
 }
 
-export const authAction = { login, logout };

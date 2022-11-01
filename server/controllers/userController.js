@@ -40,43 +40,41 @@ const login = async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    //find a username
-    // where: {
-    //   username: req.body.username,
-    // }
-    const employees = await Employees.findOne({
+    const employee = await Employees.findOne({
       where: {
-        username: req.body.username,
-      }
+        username,
+      },
     });
     //if user is found, compare password with bcrypt
-    if (employees) {
+    if (employee) {
       const isPasswordCorrect = await bcrypt.compare(
         password,
-        employees.password
+        employee.password
       );
       //if password is the same
       //generate token with the user's id and the secretKey in the env file
       if (isPasswordCorrect) {
-        let token = jwt.sign({ id: employees.id }, process.env.secretKey, {
+        let token = jwt.sign({ id: employee.id }, process.env.secretKey, {
           expiresIn: "24h",
         });
 
-        //if password matches wit the one in the database
-        //go ahead and generate a cookie for the user
+        // maxAge
+        // 60 * 1000 = 1min
+        // 60 * 60 * 1000 = 1h
+        // 24 * 60 * 60 * 1000 = 24h == 1 day
         res.cookie("jwt", token, {
           maxAge: 1 * 24 * 60 * 60 * 1000,
           httpOnly: true,
         });
         //send employees data
-        return res.status(201).json({ message: "Login success" });
+        res.status(200).json({employee: employee.username});
       } else {
-        return res
+        res
           .status(401)
-          .send("Authentication failed, password NOT match");
+          .json({ error: "Authentication failed, password NOT match"});
       }
     } else {
-      return res.status(401).send("Authentication failed, user NOT found");
+      res.status(401).json({error: "Authentication failed, user NOT found"});
     }
   } catch (error) {
     console.log(error);

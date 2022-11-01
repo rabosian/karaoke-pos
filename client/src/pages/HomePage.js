@@ -1,8 +1,15 @@
 import React from 'react'
+import { useSelector } from 'react-redux'
 
 const HomePage = () => {
+  const auth = useSelector((state) => state.auth)
+
   return (
-    <div>HomePage</div>
+    <div>
+      <h1>Karaoke</h1>
+      <h2>{auth.username}</h2>
+      <h3>{auth.isLogin}</h3>
+    </div>
   )
 }
 

@@ -67,7 +67,7 @@ const login = async (req, res) => {
           httpOnly: true,
         });
         //send employees data
-        res.status(200).json({employee: employee.username});
+        res.status(200).json({ employee: employee.username });
       } else {
         res
           .status(401)

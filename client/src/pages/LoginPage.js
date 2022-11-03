@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Grid, Paper, Avatar, TextField, Button, Alert } from "@mui/material";
-import { login } from "../redux/actions/authAction";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { loginSuccess, logoutSuccess } from "../redux/reducers/authReducer";
 import api from "../redux/api";
 
 const LoginPage = () => {
@@ -10,29 +10,29 @@ const LoginPage = () => {
   const [password, setPassword] = useState();
   const [error, setError] = useState();
   const [loading, setLoading] = useState(false);
-  const auth = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const loginRequest = async () => {
-    if (!username) {
-      setError('username MUST BE provided')
-    } else if (!password) {
-      setError('password MUST BE provided')
-    } else {
-      console.log(">>>>>", auth);
+  const handleLogin = async () => {
+    const body = { username, password }
+    try {
       setLoading(true)
-      dispatch(login(username, password));
+      let response = await api.post("/employees/login", body, { withCredentials: true })
+      dispatch(loginSuccess({ username: response.data.employee}))
+      navigate("/")
+    } catch (err) {
+      let error = err.response.data.error
+      setError(error)
+      dispatch(logoutSuccess())
+    } finally {
       setLoading(false)
-      navigate('/')
     }
   };
 
-
   return (
     <div>
-      <Grid align="center" sx={{ mt: 5 }}>
-        <Paper sx={{ padding: 7, width: 400 }}>
+      <Grid align="center" sx={{ mt: 10 }}>
+        <Paper sx={{ padding: 7, width: 500 }}>
           <Grid align="center">
             <Avatar></Avatar>
             <h2>Log In</h2>
@@ -60,7 +60,7 @@ const LoginPage = () => {
             disabled={loading}
             sx={{ mt: 4 }}
             style={{ backgroundColor: "#11262f" }}
-            onClick={loginRequest}
+            onClick={handleLogin}
           >
             Log In
           </Button>

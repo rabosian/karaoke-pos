@@ -8,7 +8,6 @@ const HomePage = () => {
     <div>
       <h1>Karaoke</h1>
       <h2>{auth.username}</h2>
-      <h3>{auth.isLogin}</h3>
     </div>
   )
 }

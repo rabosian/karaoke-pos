@@ -2,8 +2,13 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const db = require("./models");
-const userRoutes = require("./routes/userRoutes");
 const PORT = process.env.PORT || 4000;
+
+// routes
+const userRoutes = require("./routes/userRoutes");
+const categoriesRoutes = require("./routes/categoriesRoutes")
+const productsRoutes = require("./routes/productsRoutes")
+
 
 const app = express();
 
@@ -19,6 +24,8 @@ db.sequelize.sync({ force: false }).then(() => {
 
 //routes for the user API
 app.use("/api/employees", userRoutes);
+app.use("/api/categories", categoriesRoutes);
+app.use("/api/products", productsRoutes);
 
 //listening to server connection
 app.listen(PORT, () => console.log(`Server is connected on ${PORT}`));

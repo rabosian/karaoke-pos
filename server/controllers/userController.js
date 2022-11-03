@@ -9,6 +9,7 @@ const Employees = db.employees;
 const signup = async (req, res) => {
   try {
     const { username, password } = req.body;
+    console.log(username, password);
     const data = {
       username,
       password: await bcrypt.hash(password, 10),
@@ -17,7 +18,13 @@ const signup = async (req, res) => {
     const employees = await Employees.create(data);
 
     if (employees) {
-      return res.status(201).send("User created successfully!");
+      let token = jwt.sign({ id: employees.id }, process.env.secretKey, {
+        expiresIn: "24h",
+      });
+
+      res.cookie("jwt", token, { maxAge: 1 * 24 * 60 * 60, httpOnly: true });
+      //send users details
+      return res.status(201).send(employees);
     } else {
       return res.status(409).send("Signup failed");
     }
@@ -27,35 +34,45 @@ const signup = async (req, res) => {
 };
 
 //login authentication
-
 const login = async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    //find a username
-    const employees = await Employees.findOne({ username });
-    
+    const employee = await Employees.findOne({
+      where: {
+        username,
+      },
+    });
     //if user is found, compare password with bcrypt
-    if (employees) {
-      const isPasswordCorrect = await bcrypt.compare(password, employees.password);
-
+    if (employee) {
+      const isPasswordCorrect = await bcrypt.compare(
+        password,
+        employee.password
+      );
       //if password is the same
       //generate token with the user's id and the secretKey in the env file
       if (isPasswordCorrect) {
-        let token = jwt.sign({ id: employees.id }, process.env.secretKey, {
-          expiresIn: '24h',
+        let token = jwt.sign({ id: employee.id }, process.env.secretKey, {
+          expiresIn: "24h",
         });
 
-        //if password matches wit the one in the database
-        //go ahead and generate a cookie for the user
-        res.cookie("employee access jwt", token, { maxAge: 1 * 24 * 60 * 60, httpOnly: true });
+        // maxAge
+        // 60 * 1000 = 1min
+        // 60 * 60 * 1000 = 1h
+        // 24 * 60 * 60 * 1000 = 24h == 1 day
+        res.cookie("jwt", token, {
+          maxAge: 1 * 24 * 60 * 60 * 1000,
+          httpOnly: true,
+        });
         //send employees data
-        return res.status(201).send("Login success!");
+        res.status(200).json({ employee: employee.username });
       } else {
-        return res.status(401).send("Password is wrong");
+        res
+          .status(401)
+          .json({ error: "Authentication failed, password NOT match"});
       }
     } else {
-      return res.status(401).send("username cannot find");
+      res.status(401).json({error: "Authentication failed, user NOT found"});
     }
   } catch (error) {
     console.log(error);
@@ -71,5 +88,5 @@ const logout = (req, res) => {
 module.exports = {
   signup,
   login,
-  logout
+  logout,
 };

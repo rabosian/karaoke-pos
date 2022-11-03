@@ -1,28 +1,43 @@
-import React, { useState } from "react";
-import { Grid, Paper, Avatar, TextField, Button } from "@mui/material";
-import { authAction } from "../redux/actions/authAction";
-import { useDispatch } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { Grid, Paper, Avatar, TextField, Button, Alert } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { loginSuccess, logoutSuccess } from "../redux/reducers/authReducer";
+import api from "../redux/api";
 
 const LoginPage = () => {
   const [username, setUsername] = useState();
   const [password, setPassword] = useState();
+  const [error, setError] = useState();
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const handleLogin = () => {
-    dispatch(authAction.login(username, password));
-    navigate("/");
+  const handleLogin = async () => {
+    const body = { username, password }
+    try {
+      setLoading(true)
+      let response = await api.post("/employees/login", body, { withCredentials: true })
+      dispatch(loginSuccess({ username: response.data.employee}))
+      navigate("/")
+    } catch (err) {
+      let error = err.response.data.error
+      setError(error)
+      dispatch(logoutSuccess())
+    } finally {
+      setLoading(false)
+    }
   };
 
   return (
     <div>
-      <Grid align="center" sx={{ mt: 5 }}>
-        <Paper sx={{ padding: 7, width: 400 }}>
+      <Grid align="center" sx={{ mt: 10 }}>
+        <Paper sx={{ padding: 7, width: 500 }}>
           <Grid align="center">
             <Avatar></Avatar>
             <h2>Log In</h2>
           </Grid>
+          {error && <Alert severity="error">{error}</Alert>}
           <TextField
             required
             variant="standard"
@@ -42,6 +57,7 @@ const LoginPage = () => {
           <Button
             variant="contained"
             color="primary"
+            disabled={loading}
             sx={{ mt: 4 }}
             style={{ backgroundColor: "#11262f" }}
             onClick={handleLogin}

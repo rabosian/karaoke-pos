@@ -3,6 +3,7 @@ import RoomPage from './RoomPage';
 import { Link, Button } from "react-router-dom";
 
 const HomePage = () => {
+
   return (
     <div>
 			<h3>메인이라구</h3>

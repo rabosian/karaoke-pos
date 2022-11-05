@@ -70,7 +70,7 @@ const categories_delete = async (req, res) => {
 
 const findCategoryById = async (req, res) => {
   try {
-    const allProducts = await Categories.findByPk(categpryId, {
+    const allProducts = await Categories.findByPk(categoryId, {
       include: ["products"]
     })
     res.send(allProducts)

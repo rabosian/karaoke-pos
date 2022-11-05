@@ -38,12 +38,12 @@ const products_post = async (req, res) => {
 const products_update = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, price, stock, categories_id } = req.body;
+    const { name, price, stock, categoryId } = req.body;
     await Products.update(
       { name: name,
         price: price,
         stock: stock,
-        categories_id: categories_id
+        categoryId: categoryId
       },
       {
         where: {

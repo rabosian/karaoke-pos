@@ -3,8 +3,8 @@ import PrivateRoute from "./route/PrivateRoute";
 import HomePage from "./pages/HomePage/HomePage";
 import LoginPage from "./pages/LoginPage";
 import RoomCard from "./components/RoomCard/RoomCard";
-import EmployeesPage from "./pages/adminpage/EmployeesPage";
-import ProductsPage from "./pages/adminpage/ProductsPage";
+import EmployeesPage from "./pages/adminpage/EmployeesPage/EmployeesPage";
+import ProductsPage from "./pages/adminpage/ProductsPage/ProductsPage";
 
 function App() {
   return (

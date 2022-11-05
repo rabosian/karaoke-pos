@@ -1,0 +1,11 @@
+.box {
+    width: 200px;
+    height: 200px;
+    background-color: bisque;
+}
+
+.info {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+}

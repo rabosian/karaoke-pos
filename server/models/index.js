@@ -24,11 +24,10 @@ db.categories = require('./categoriesModel') (sequelize, DataTypes)
 db.products = require('./productsModel') (sequelize, DataTypes)
 
 // categories : products -> 1:N
-db.categories.hasMany(db.products, {
-  foreignKey: "categories_id",
-});
+db.categories.hasMany(db.products, { as: "categories_id" });
 db.products.belongsTo(db.categories, {
-  foreignKey: "id",
+  foreignKey: "categories_id",
+  as: "categories"
 });
 
 

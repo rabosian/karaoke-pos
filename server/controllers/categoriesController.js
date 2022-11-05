@@ -6,7 +6,9 @@ const Categories = db.categories;
 
 // Add category
 const categories_get = async (req, res) => {
-  const allCategories = await Categories.findAll();
+  const allCategories = await Categories.findAll({
+    include: ["products"]
+  });
   res.json(allCategories);
   try {
   } catch (error) {
@@ -24,14 +26,15 @@ const categories_post = async (req, res) => {
     //saving the categories
     const categories = await Categories.create(data);
     if (categories) {
-      return res.status(201).send("Category created successfully!");
+      return res.status(201).json(categories);
     } else {
-      return res.status(409).send("Category created fail");
+      return res.status(409).json({ message: "Category created fail" });
     }
   } catch (error) {
     console.log(error);
   }
 };
+
 
 const categories_update = async (req, res) => {
   try {
@@ -65,10 +68,10 @@ const categories_delete = async (req, res) => {
   }
 };
 
-const categories_allProducts = async (req, res) => {
+const findCategoryById = async (req, res) => {
   try {
-    const allProducts = await Categories.findAll({
-      include: ["categories_id"],
+    const allProducts = await Categories.findByPk(categpryId, {
+      include: ["products"]
     })
     res.send(allProducts)
   } catch (error) {
@@ -81,5 +84,5 @@ module.exports = {
   categories_get,
   categories_update,
   categories_delete,
-  categories_allProducts
+  findCategoryById
 };

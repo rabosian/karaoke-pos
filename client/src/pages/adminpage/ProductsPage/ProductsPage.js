@@ -25,7 +25,9 @@ const ProductsPage = () => {
   // from api
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
-
+  const [name, setName] = useState("");
+  const [price, setPrice] = useState("");
+  const [stock, setStock] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("category");
 
   const getCategories = async () => {
@@ -34,7 +36,7 @@ const ProductsPage = () => {
       let data = response.data;
       let arr = [];
       data.map((item) => {
-        arr.push([item.id, item.name]);
+        arr.push({ id: item.id, name: item.name });
       });
       setCategories(arr);
     } catch (err) {
@@ -48,7 +50,9 @@ const ProductsPage = () => {
       let data = response.data;
       let arr = [];
       data.map((item) => {
-        arr.push([item.id, item.name]);
+        arr.push(
+          createData(item.categoryId, item.name, item.price, item.stock)
+        );
       });
       setProducts(arr);
     } catch (err) {
@@ -56,21 +60,35 @@ const ProductsPage = () => {
     }
   };
 
+  const addProduct = async () => {
+    let nameToId = categories.find((e) => e.name == selectedCategory);
+    try {
+      let response = await api.post("/products/create", {
+        name,
+        price,
+        stock,
+        categoryId: nameToId.id,
+      });
+      let data = response.data;
+      let col = createData(data.categoryId, data.name, data.price, data.stock);
+      setProducts([...products, col]);
+      setName("");
+      setPrice("");
+      setStock("");
+      setSelectedCategory("");
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   useEffect(() => {
     getCategories();
-    // getProducts();
-  }, []);
+    getProducts();
+  }, [products]);
 
   function createData(category, name, price, stock) {
     return { category, name, price, stock };
   }
-  const rows = [
-    createData("Food", "ice cream", 5.0, 30),
-    createData("Drink", "soju", 21.99, 30),
-    createData("Service", "1 hour", 25.0, 1),
-    createData("Service", "30 mins", 13.0, 1),
-    createData("Service", "add guest", 10.0, 1),
-  ];
 
   return (
     <div>
@@ -89,17 +107,20 @@ const ProductsPage = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rows.map((row) => (
-                  <TableRow
-                    key={row.name}
-                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                  >
-                    <TableCell align="right">{row.category}</TableCell>
-                    <TableCell align="right">{row.name}</TableCell>
-                    <TableCell align="right">{row.price}</TableCell>
-                    <TableCell align="right">{row.stock}</TableCell>
-                  </TableRow>
-                ))}
+                {products.map((row) => {
+                  let idToName = categories.find((e) => e.id === row.category);
+                  return (
+                    <TableRow
+                      key={row.name}
+                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                    >
+                      <TableCell align="right">{idToName.name}</TableCell>
+                      <TableCell align="right">{row.name}</TableCell>
+                      <TableCell align="right">{row.price}</TableCell>
+                      <TableCell align="right">{row.stock}</TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           </TableContainer>
@@ -108,47 +129,48 @@ const ProductsPage = () => {
         <div className={styles.right}>
           <Grid align="center">
             <h4>add product</h4>
-            <Paper sx={{ padding: 7, width: 450 }}>
+            <Paper sx={{ padding: 7, width: 350 }}>
               <TextField
                 required
                 variant="standard"
-                type="text"
                 fullWidth
                 label="Product name"
+                onChange={(e) => setName(e.target.value)}
               />
               <TextField
                 required
                 variant="standard"
-                type="password"
                 fullWidth
                 label="Price"
+                onChange={(e) => setPrice(e.target.value)}
               />
               <TextField
                 required
                 variant="standard"
-                type="password"
                 fullWidth
                 label="Stock"
+                onChange={(e) => setStock(e.target.value)}
               />
               <Select
                 size="small"
                 value={selectedCategory}
-                onChange={(e)=>setSelectedCategory(e.target.value)}
-                sx={{ width: "200px" }}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                sx={{ mt: 2, width: "100px" }}
               >
                 {categories &&
                   categories?.map((item) => {
                     return (
-                      <MenuItem key={item[0]} value={item[1]}>
-                        {item[1]}
+                      <MenuItem key={item.id} value={item.name}>
+                        {item.name}
                       </MenuItem>
                     );
                   })}
               </Select>
               <Button
                 variant="contained"
-                sx={{ mt: 4 }}
+                sx={{ mt: 2, display: "block" }}
                 style={{ backgroundColor: "#11262f" }}
+                onClick={addProduct}
               >
                 Add
               </Button>

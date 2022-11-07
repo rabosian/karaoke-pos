@@ -23,7 +23,7 @@ const products_post = async (req, res) => {
       stock,
       categoryId
     };
-    //saving the products
+    // saving the products
     const products = await Products.create(data);
     if (products) {
       return res.status(201).json(products);

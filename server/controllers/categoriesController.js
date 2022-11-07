@@ -79,10 +79,22 @@ const findCategoryById = async (req, res) => {
   }
 }
 
+const categories_getAllProduct = async (req, res) => {
+  try {
+    const allProducts = await Categories.findAll({
+      include: ["products"]
+    })
+    res.json(allProducts)
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 module.exports = {
   categories_post,
   categories_get,
   categories_update,
   categories_delete,
+  categories_getAllProduct,
   findCategoryById
 };

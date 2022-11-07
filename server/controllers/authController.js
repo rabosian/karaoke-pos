@@ -69,10 +69,10 @@ const login = async (req, res) => {
       } else {
         res
           .status(401)
-          .json({ error: "Authentication failed, password NOT match"});
+          .json({ error: "Authentication failed, password NOT match" });
       }
     } else {
-      res.status(401).json({error: "Authentication failed, user NOT found"});
+      res.status(401).json({ error: "Authentication failed, user NOT found" });
     }
   } catch (error) {
     console.log(error);
@@ -85,8 +85,54 @@ const logout = (req, res) => {
   res.redirect("/");
 };
 
+const getEmployees = async (req, res) => {
+  try {
+    const employees = await Employees.findAll();
+    console.log(employees);
+    res.status(200).json(employees);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+const updateEmployee = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { username, password } = req.body;
+
+    const data = {
+      username,
+      password: await bcrypt.hash(password, 10),
+    };
+    console.log("input: ", data);
+
+    await Employees.update(data, {
+      where: { id },
+    });
+
+    res.status(200).json(id);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+const deleteEmployee = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await Employees.destroy({
+      where: { id },
+    });
+    res.json("delete user", id)
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 module.exports = {
   signup,
   login,
   logout,
+  getEmployees,
+  updateEmployee,
+  deleteEmployee
 };

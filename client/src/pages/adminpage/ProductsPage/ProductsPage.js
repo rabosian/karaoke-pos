@@ -61,7 +61,7 @@ const ProductsPage = () => {
   };
 
   const addProduct = async () => {
-    let nameToId = categories.find((e) => e.name == selectedCategory);
+    let nameToId = categories.find((e) => e.name === selectedCategory);
     try {
       let response = await api.post("/products/create", {
         name,
@@ -84,7 +84,7 @@ const ProductsPage = () => {
   useEffect(() => {
     getCategories();
     getProducts();
-  }, [products]);
+  }, []);
 
   function createData(category, name, price, stock) {
     return { category, name, price, stock };
@@ -125,7 +125,7 @@ const ProductsPage = () => {
             </Table>
           </TableContainer>
         </div>
-
+        
         <div className={styles.right}>
           <Grid align="center">
             <h4>add product</h4>
@@ -134,6 +134,7 @@ const ProductsPage = () => {
                 required
                 variant="standard"
                 fullWidth
+                value={name}
                 label="Product name"
                 onChange={(e) => setName(e.target.value)}
               />
@@ -141,6 +142,7 @@ const ProductsPage = () => {
                 required
                 variant="standard"
                 fullWidth
+                value={price}
                 label="Price"
                 onChange={(e) => setPrice(e.target.value)}
               />
@@ -148,6 +150,7 @@ const ProductsPage = () => {
                 required
                 variant="standard"
                 fullWidth
+                value={stock}
                 label="Stock"
                 onChange={(e) => setStock(e.target.value)}
               />

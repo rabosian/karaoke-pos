@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import api from "../../../api";
+import Sidebar from "../../../components/Sidebar";
 
 // TO DO
 // 1. useEffect가 products fetch
@@ -113,6 +114,7 @@ const ProductsPage = () => {
 
   return (
     <Box>
+      <Sidebar />
       <Typography variant="h3" sx={{ textAlign: "center", my: 3 }}>
         Manage Products
       </Typography>

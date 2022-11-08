@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import api from "../../../api";
+import Sidebar from "../../../components/Sidebar";
 
 const EmployeesPage = () => {
   const [users, setUsers] = useState([]);
@@ -81,6 +82,7 @@ const EmployeesPage = () => {
 
   return (
     <Box>
+      <Sidebar />
       <Typography variant="h3" sx={{ textAlign: "center", my: 3 }}>
         Manage Employees
       </Typography>

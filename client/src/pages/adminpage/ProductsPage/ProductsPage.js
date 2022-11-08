@@ -1,21 +1,16 @@
 import React, { useEffect, useState } from "react";
 import {
+  Box,
   Grid,
   Paper,
   TextField,
   Button,
   Alert,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   Typography,
   Select,
   MenuItem,
 } from "@mui/material";
-import styles from "./ProductsPage.module.css";
+import { DataGrid } from "@mui/x-data-grid";
 import api from "../../../api";
 
 // TO DO
@@ -29,6 +24,7 @@ const ProductsPage = () => {
   const [price, setPrice] = useState("");
   const [stock, setStock] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("category");
+  const [error, setError] = useState("");
 
   const getCategories = async () => {
     try {
@@ -50,9 +46,14 @@ const ProductsPage = () => {
       let data = response.data;
       let arr = [];
       data.map((item) => {
-        arr.push(
-          createData(item.categoryId, item.name, item.price, item.stock)
-        );
+        let idToName = categories.find((e) => e.id === item.categoryId)
+        arr.push({
+          id: item.id,
+          category: idToName.name,
+          name: item.name,
+          price: item.price,
+          stock: item.stock,
+        });
       });
       setProducts(arr);
     } catch (err) {
@@ -70,8 +71,17 @@ const ProductsPage = () => {
         categoryId: nameToId.id,
       });
       let data = response.data;
-      let col = createData(data.categoryId, data.name, data.price, data.stock);
-      setProducts([...products, col]);
+      let idToName = categories.find((e) => e.id === data.categoryId)
+      setProducts((prev) => [
+        ...prev,
+        {
+          id: data.id,
+          category: idToName.name,
+          name: data.name,
+          price: data.price,
+          stock: data.stock,
+        },
+      ]);
       setName("");
       setPrice("");
       setStock("");
@@ -86,50 +96,42 @@ const ProductsPage = () => {
     getProducts();
   }, []);
 
-  function createData(category, name, price, stock) {
-    return { category, name, price, stock };
-  }
+  const columns = [
+    { field: "category", headerName: "Category", width: 120 },
+    { field: "name", headerName: "Name", width: 150 },
+    { field: "price", headerName: "Price", width: 80 },
+    { field: "stock", headerName: "Stock", width: 80 },
+  ];
+
+  const rows = products.map((product) => ({
+    id: product.id,
+    category: product.category,
+    name: product.name,
+    price: product.price,
+    stock: product.stock,
+  }));
 
   return (
-    <div>
-      <h1>Manage Products</h1>
-      <div className={styles.screen}>
-        <div className={styles.left}>
-          <h4>Products</h4>
-          <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 500 }} aria-label="simple table">
-              <TableHead>
-                <TableRow sx={{ backgroundColor: "beige" }}>
-                  <TableCell align="right">category</TableCell>
-                  <TableCell align="right">name</TableCell>
-                  <TableCell align="right">price</TableCell>
-                  <TableCell align="right">stock</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {products.map((row) => {
-                  let idToName = categories.find((e) => e.id === row.category);
-                  return (
-                    <TableRow
-                      key={row.name}
-                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                    >
-                      <TableCell align="right">{idToName.name}</TableCell>
-                      <TableCell align="right">{row.name}</TableCell>
-                      <TableCell align="right">{row.price}</TableCell>
-                      <TableCell align="right">{row.stock}</TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </div>
-        
-        <div className={styles.right}>
+    <Box>
+      <Typography variant="h3" sx={{ textAlign: "center", my: 3 }}>
+        Manage Products
+      </Typography>
+      <Box sx={{ display: "flex", justifyContent: "center" }}>
+        <Box sx={{ height: 700, width: "550px" }}>
+          <DataGrid
+            rows={rows}
+            columns={columns}
+            pageSize={10}
+            rowsPerPageOptions={[10]}
+            checkboxSelection
+            disableSelectionOnClick
+          />
+        </Box>
+        <Box sx={{ height: 400, width: "50%" }}>
           <Grid align="center">
             <h4>add product</h4>
             <Paper sx={{ padding: 7, width: 350 }}>
+              {error && <Alert severity="error">{error}</Alert>}
               <TextField
                 required
                 variant="standard"
@@ -179,9 +181,9 @@ const ProductsPage = () => {
               </Button>
             </Paper>
           </Grid>
-        </div>
-      </div>
-    </div>
+        </Box>
+      </Box>
+    </Box>
   );
 };
 

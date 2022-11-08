@@ -104,8 +104,6 @@ const updateEmployee = async (req, res) => {
       username,
       password: await bcrypt.hash(password, 10),
     };
-    console.log("input: ", data);
-
     await Employees.update(data, {
       where: { id },
     });
@@ -122,7 +120,7 @@ const deleteEmployee = async (req, res) => {
     await Employees.destroy({
       where: { id },
     });
-    res.json("delete user", id)
+    res.json("user deleted")
   } catch (err) {
     console.log(err);
   }

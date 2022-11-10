@@ -6,9 +6,7 @@ const Categories = db.categories;
 
 // Add category
 const categories_get = async (req, res) => {
-  const allCategories = await Categories.findAll({
-    include: ["products"]
-  });
+  const allCategories = await Categories.findAll();
   res.json(allCategories);
   try {
   } catch (error) {

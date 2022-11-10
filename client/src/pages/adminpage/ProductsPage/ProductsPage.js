@@ -9,7 +9,11 @@ import {
   Typography,
   Select,
   MenuItem,
+  IconButton,
+  Modal,
 } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import { DataGrid } from "@mui/x-data-grid";
 import api from "../../../api";
 import Sidebar from "../../../components/Sidebar";
@@ -47,10 +51,10 @@ const ProductsPage = () => {
       let data = response.data;
       let arr = [];
       data.map((item) => {
-        let idToName = categories.find((e) => e.id === item.categoryId)
+        let idToName = categories.find((e) => e.id === item.categoryId).name;
         arr.push({
           id: item.id,
-          category: idToName.name,
+          category: idToName,
           name: item.name,
           price: item.price,
           stock: item.stock,
@@ -62,7 +66,26 @@ const ProductsPage = () => {
     }
   };
 
+  const deleteProduct = async (id) => {
+    try {
+      let response = await api.delete(`/products/delete/${id}`);
+      let data = response.data;
+      console.log(data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   const addProduct = async () => {
+    if (
+      name === "" ||
+      price === "" ||
+      stock === "" ||
+      selectedCategory === ""
+    ) {
+      setError("fill cannot be empty");
+      return;
+    }
     let nameToId = categories.find((e) => e.name === selectedCategory);
     try {
       let response = await api.post("/products/create", {
@@ -72,7 +95,7 @@ const ProductsPage = () => {
         categoryId: nameToId.id,
       });
       let data = response.data;
-      let idToName = categories.find((e) => e.id === data.categoryId)
+      let idToName = categories.find((e) => e.id === data.categoryId);
       setProducts((prev) => [
         ...prev,
         {
@@ -92,16 +115,59 @@ const ProductsPage = () => {
     }
   };
 
+  const updateProduct = async (id) => {
+
+  };
+
   useEffect(() => {
     getCategories();
     getProducts();
   }, []);
+
+  const handleModelDelete = (e, cellValues) => {
+    console.log("delete cellValues: ", cellValues.id);
+    if (window.confirm("delete this product?")) {
+      deleteProduct(cellValues.id);
+      alert("delete success");
+      getProducts();
+    }
+  };
+
+  const handleModelEdit = (e, cellValues) => {
+    console.log("edit cellValues: ", cellValues);
+    updateProduct(cellValues.id);
+  };
 
   const columns = [
     { field: "category", headerName: "Category", width: 120 },
     { field: "name", headerName: "Name", width: 150 },
     { field: "price", headerName: "Price", width: 80 },
     { field: "stock", headerName: "Stock", width: 80 },
+    {
+      field: "actions",
+      headerName: "Actions",
+      width: 140,
+      renderCell: (cellValues) => {
+        return (
+          <>
+            <IconButton
+              onClick={(e) => {
+                handleModelDelete(e, cellValues);
+              }}
+            >
+              <DeleteIcon />
+            </IconButton>
+            <IconButton
+              onClick={(e) => {
+                handleModelEdit(e, cellValues);
+              }}
+            >
+              <EditIcon />
+            </IconButton>
+          </>
+        );
+      },
+    },
   ];
 
   const rows = products.map((product) => ({
@@ -118,26 +184,26 @@ const ProductsPage = () => {
       <Typography variant="h3" sx={{ textAlign: "center", my: 3 }}>
         Manage Products
       </Typography>
-      <Box sx={{ display: "flex", justifyContent: "center" }}>
-        <Box sx={{ height: 700, width: "550px" }}>
+      <Box sx={{ display: "flex", justifyContent: "center", gap: "50px" }}>
+        <Box sx={{ height: "635px", width: "700px" }}>
           <DataGrid
             rows={rows}
             columns={columns}
             pageSize={10}
-            rowsPerPageOptions={[10]}
             checkboxSelection
             disableSelectionOnClick
           />
         </Box>
-        <Box sx={{ height: 400, width: "50%" }}>
+        <Box sx={{ height: 400, width: "400px" }}>
           <Grid align="center">
-            <h4>add product</h4>
             <Paper sx={{ padding: 7, width: 350 }}>
+              <h4>add product</h4>
               {error && <Alert severity="error">{error}</Alert>}
               <TextField
                 required
                 variant="standard"
                 fullWidth
+                size="small"
                 value={name}
                 label="Product name"
                 onChange={(e) => setName(e.target.value)}
@@ -146,6 +212,7 @@ const ProductsPage = () => {
                 required
                 variant="standard"
                 fullWidth
+                size="small"
                 value={price}
                 label="Price"
                 onChange={(e) => setPrice(e.target.value)}
@@ -154,6 +221,7 @@ const ProductsPage = () => {
                 required
                 variant="standard"
                 fullWidth
+                size="small"
                 value={stock}
                 label="Stock"
                 onChange={(e) => setStock(e.target.value)}

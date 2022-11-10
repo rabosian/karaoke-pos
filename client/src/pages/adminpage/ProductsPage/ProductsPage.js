@@ -17,6 +17,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import { DataGrid } from "@mui/x-data-grid";
 import api from "../../../api";
 import Sidebar from "../../../components/Sidebar";
+import ProductInput from "./ProductInput";
 
 // TO DO
 // 1. useEffect가 products fetch
@@ -25,11 +26,6 @@ const ProductsPage = () => {
   // from api
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
-  const [name, setName] = useState("");
-  const [price, setPrice] = useState("");
-  const [stock, setStock] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("category");
-  const [error, setError] = useState("");
 
   const getCategories = async () => {
     try {
@@ -76,16 +72,8 @@ const ProductsPage = () => {
     }
   };
 
-  const addProduct = async () => {
-    if (
-      name === "" ||
-      price === "" ||
-      stock === "" ||
-      selectedCategory === ""
-    ) {
-      setError("fill cannot be empty");
-      return;
-    }
+  const addProduct = async (name, price, stock, selectedCategory) => {
+
     let nameToId = categories.find((e) => e.name === selectedCategory);
     try {
       let response = await api.post("/products/create", {
@@ -106,10 +94,6 @@ const ProductsPage = () => {
           stock: data.stock,
         },
       ]);
-      setName("");
-      setPrice("");
-      setStock("");
-      setSelectedCategory("");
     } catch (err) {
       console.log(err);
     }
@@ -194,64 +178,7 @@ const ProductsPage = () => {
             disableSelectionOnClick
           />
         </Box>
-        <Box sx={{ height: 400, width: "400px" }}>
-          <Grid align="center">
-            <Paper sx={{ padding: 7, width: 350 }}>
-              <h4>add product</h4>
-              {error && <Alert severity="error">{error}</Alert>}
-              <TextField
-                required
-                variant="standard"
-                fullWidth
-                size="small"
-                value={name}
-                label="Product name"
-                onChange={(e) => setName(e.target.value)}
-              />
-              <TextField
-                required
-                variant="standard"
-                fullWidth
-                size="small"
-                value={price}
-                label="Price"
-                onChange={(e) => setPrice(e.target.value)}
-              />
-              <TextField
-                required
-                variant="standard"
-                fullWidth
-                size="small"
-                value={stock}
-                label="Stock"
-                onChange={(e) => setStock(e.target.value)}
-              />
-              <Select
-                size="small"
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                sx={{ mt: 2, width: "100px" }}
-              >
-                {categories &&
-                  categories?.map((item) => {
-                    return (
-                      <MenuItem key={item.id} value={item.name}>
-                        {item.name}
-                      </MenuItem>
-                    );
-                  })}
-              </Select>
-              <Button
-                variant="contained"
-                sx={{ mt: 2, display: "block" }}
-                style={{ backgroundColor: "#11262f" }}
-                onClick={addProduct}
-              >
-                Add
-              </Button>
-            </Paper>
-          </Grid>
-        </Box>
+        <ProductInput categories={categories} addProduct={addProduct} />
       </Box>
     </Box>
   );

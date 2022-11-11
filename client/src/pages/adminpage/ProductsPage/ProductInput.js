@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Grid,
@@ -8,14 +8,36 @@ import {
   Select,
   MenuItem,
   Button,
+  Typography,
 } from "@mui/material";
+import api from "../../../api";
 
-const ProductInput = ({ categories, addProduct }) => {
+const ProductInput = ({ categories, addProduct, selected, updateProduct }) => {
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [stock, setStock] = useState("");
   const [error, setError] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("category");
+
+  const getProductById = async () => {
+    try {
+      let response = await api.get(`/products/${selected}`)
+      let data = response.data
+      let idToName = categories.find((e) => e.id === data.categoryId).name
+      setName(data.name)
+      setPrice(data.price)
+      setStock(data.stock)
+      setSelectedCategory(idToName)
+    } catch(err) {
+      console.log(err)
+    }
+  }
+
+  useEffect(() => {
+    if (selected > 0) {
+      getProductById()
+    }
+  }, [])
 
   const add = () => {
     if (
@@ -35,11 +57,29 @@ const ProductInput = ({ categories, addProduct }) => {
     }
   };
 
+  const update = () => {
+    if (
+      name === "" ||
+      price === "" ||
+      stock === "" ||
+      selectedCategory === ""
+    ) {
+      setError("fill cannot be empty");
+      return;
+    } else {
+      updateProduct(name, price, stock, selectedCategory);
+      setName("");
+      setPrice("");
+      setStock("");
+      setSelectedCategory("");
+    }
+  };
+
   return (
-    <Box sx={{ height: 400, width: "400px" }}>
+    <Box sx={{ position: 'absolute', top: '40%', left: '50%', transform: 'translate(-50%, -50%)' }}>
       <Grid align="center">
         <Paper sx={{ padding: 7, width: 350 }}>
-          <h4>add product</h4>
+          <h4>{selected > 0 ? 'Update Product' : 'Add Product'}</h4>
           {error && <Alert severity="error">{error}</Alert>}
           <TextField
             required
@@ -87,9 +127,9 @@ const ProductInput = ({ categories, addProduct }) => {
             variant="contained"
             sx={{ mt: 2, display: "block" }}
             style={{ backgroundColor: "#11262f" }}
-            onClick={add}
+            onClick={selected > 0 ? update : add}
           >
-            Add
+            {selected > 0 ? 'Update' : 'Add'}
           </Button>
         </Paper>
       </Grid>

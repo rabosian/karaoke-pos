@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import AddIcon from "@mui/icons-material/AddCircle";
 import { DataGrid } from "@mui/x-data-grid";
 import api from "../../../api";
 import Sidebar from "../../../components/Sidebar";
@@ -23,40 +24,41 @@ import ProductInput from "./ProductInput";
 // 1. useEffect가 products fetch
 // 2. product add/update하면 페이지 업데이트(useEffect)
 const ProductsPage = () => {
-  // from api
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
+  const [selected, setSelected] = useState(0);
+  const [openModal, setOpenModal] = useState(false);
+  const [msg, setMsg] = useState("");
 
-  const getCategories = async () => {
-    try {
-      let response = await api.get("/categories");
-      let data = response.data;
-      let arr = [];
-      data.map((item) => {
-        arr.push({ id: item.id, name: item.name });
-      });
-      setCategories(arr);
-    } catch (err) {
-      console.log("error", err);
+  const convertNameId = (target) => {
+    if (typeof target === 'string') {
+      return categories.find((e) => e.name === target).id;
+    } else {
+      return categories.find((e) => e.id === target).name;
     }
-  };
+  }
 
-  const getProducts = async () => {
+  const getData = async () => {
     try {
-      let response = await api.get("/products");
+      let response = await api.get("/categories/allProducts");
       let data = response.data;
-      let arr = [];
+      let cat = [];
+      let prod = [];
       data.map((item) => {
-        let idToName = categories.find((e) => e.id === item.categoryId).name;
-        arr.push({
-          id: item.id,
-          category: idToName,
-          name: item.name,
-          price: item.price,
-          stock: item.stock,
+        cat.push({ id: item.id, name: item.name });
+        let products = item.products;
+        products.map((product) => {
+          prod.push({
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            stock: product.stock,
+            categoryId: product.categoryId,
+          });
         });
       });
-      setProducts(arr);
+      setCategories(cat);
+      setProducts(prod);
     } catch (err) {
       console.log("error", err);
     }
@@ -66,60 +68,73 @@ const ProductsPage = () => {
     try {
       let response = await api.delete(`/products/delete/${id}`);
       let data = response.data;
-      console.log(data);
+      setMsg("Product deleted successfully")
+      getData()
     } catch (err) {
       console.log(err);
     }
   };
 
   const addProduct = async (name, price, stock, selectedCategory) => {
-
-    let nameToId = categories.find((e) => e.name === selectedCategory);
+    let categoryId = convertNameId(selectedCategory)
     try {
       let response = await api.post("/products/create", {
         name,
         price,
         stock,
-        categoryId: nameToId.id,
+        categoryId
       });
       let data = response.data;
-      let idToName = categories.find((e) => e.id === data.categoryId);
-      setProducts((prev) => [
-        ...prev,
-        {
-          id: data.id,
-          category: idToName.name,
-          name: data.name,
-          price: data.price,
-          stock: data.stock,
-        },
-      ]);
+      getData()
+      setMsg("Product added successfully");
+      setOpenModal(false);
     } catch (err) {
       console.log(err);
     }
   };
 
-  const updateProduct = async (id) => {
+  const updateProduct = async (name, price, stock, selectedCategory) => {
+    let categoryId = convertNameId(selectedCategory)
 
+    try {
+      setMsg("Product added successfully");
+      setOpenModal(false);
+      let response = await api.put(`/products/update/${selected}`, {
+        name,
+        price,
+        stock,
+        categoryId
+      });
+      console.log("update response: ", response)
+      setMsg("Product updated successfully");
+      setOpenModal(false);
+      getData();
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   useEffect(() => {
-    getCategories();
-    getProducts();
+    getData();
   }, []);
 
+  useEffect(() => {
+    if (msg) {
+      setTimeout(() => {
+        setMsg("")
+      }, 2000)
+    }
+  }, [msg]);
+
   const handleModelDelete = (e, cellValues) => {
-    console.log("delete cellValues: ", cellValues.id);
     if (window.confirm("delete this product?")) {
       deleteProduct(cellValues.id);
-      alert("delete success");
-      getProducts();
     }
   };
 
   const handleModelEdit = (e, cellValues) => {
-    console.log("edit cellValues: ", cellValues);
-    updateProduct(cellValues.id);
+    setSelected(cellValues.id);
+    setOpenModal(true);
   };
 
   const columns = [
@@ -156,7 +171,7 @@ const ProductsPage = () => {
 
   const rows = products.map((product) => ({
     id: product.id,
-    category: product.category,
+    category: convertNameId(product.categoryId),
     name: product.name,
     price: product.price,
     stock: product.stock,
@@ -168,7 +183,23 @@ const ProductsPage = () => {
       <Typography variant="h3" sx={{ textAlign: "center", my: 3 }}>
         Manage Products
       </Typography>
-      <Box sx={{ display: "flex", justifyContent: "center", gap: "50px" }}>
+      <Box
+        sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+      >
+        {msg && (
+          <Alert severity="success" sx={{ width: "500px" }}>
+            {msg}
+          </Alert>
+        )}
+
+        <IconButton
+          onClick={() => {
+            setOpenModal(true);
+            setSelected(0);
+          }}
+        >
+          <AddIcon fontSize="large" color="success" />
+        </IconButton>
         <Box sx={{ height: "635px", width: "700px" }}>
           <DataGrid
             rows={rows}
@@ -178,7 +209,14 @@ const ProductsPage = () => {
             disableSelectionOnClick
           />
         </Box>
-        <ProductInput categories={categories} addProduct={addProduct} />
+        <Modal open={openModal} onClose={() => setOpenModal(false)}>
+          <ProductInput
+            categories={categories}
+            addProduct={addProduct}
+            updateProduct={updateProduct}
+            selected={selected}
+          />
+        </Modal>
       </Box>
     </Box>
   );

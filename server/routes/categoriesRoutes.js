@@ -10,7 +10,9 @@ router.post('/create', categoriesController.categories_post)
 router.put('/update/:id', categoriesController.categories_update)
 router.delete('/delete/:id', categoriesController.categories_delete)
 
-router.get('/findCategoryById', categoriesController.findCategoryById)
+// categories - get all Products or by id
+router.get('/allProducts', categoriesController.categories_getAllProduct)
+router.get('/:id', categoriesController.findCategoryById)
 
 
 module.exports = router 

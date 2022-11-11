@@ -3,7 +3,7 @@ import { Grid, Paper, Avatar, TextField, Button, Alert } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { loginSuccess, logoutSuccess } from "../redux/reducers/authReducer";
-import api from "../redux/api";
+import api from "../api";
 
 const LoginPage = () => {
   const [username, setUsername] = useState();

@@ -67,11 +67,12 @@ const categories_delete = async (req, res) => {
 };
 
 const findCategoryById = async (req, res) => {
+  const {id} = req.params
   try {
-    const allProducts = await Categories.findByPk(categoryId, {
+    const allProducts = await Categories.findByPk(id, {
       include: ["products"]
     })
-    res.send(allProducts)
+    res.json(allProducts)
   } catch (error) {
     console.log(error)
   }

@@ -11,7 +11,7 @@ router.put('/update/:id', categoriesController.categories_update)
 router.delete('/delete/:id', categoriesController.categories_delete)
 
 router.get('/allProducts', categoriesController.categories_getAllProduct)
-router.get('/findCategoryById', categoriesController.findCategoryById)
+router.get('/:id', categoriesController.findCategoryById)
 
 
 module.exports = router 

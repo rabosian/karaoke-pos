@@ -11,7 +11,8 @@ router.post('/login', authController.login)
 router.get('/logout', authController.logout)
 
 router.get('/', authController.getEmployees)
-router.put('/update/:id', authController.updateEmployee)
+router.get('/:id', authController.getEmployeeById)
+router.put('/update/:id', userAuth.checkUsername, authController.updateEmployee)
 router.delete('/delete/:id', authController.deleteEmployee)
 
 

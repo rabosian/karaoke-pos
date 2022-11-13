@@ -95,6 +95,20 @@ const getEmployees = async (req, res) => {
   }
 };
 
+const getEmployeeById = async (req, res) => {
+  try {
+    let { id } = req.params;
+    const employee = await Employees.findByPk(id);
+    if (!employee) {
+      res.json({ message: "User NOT found!"});
+    } else {
+      res.json(employee);
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 const updateEmployee = async (req, res) => {
   try {
     const { id } = req.params;
@@ -120,7 +134,7 @@ const deleteEmployee = async (req, res) => {
     await Employees.destroy({
       where: { id },
     });
-    res.json("user deleted")
+    res.json("user deleted");
   } catch (err) {
     console.log(err);
   }
@@ -131,6 +145,7 @@ module.exports = {
   login,
   logout,
   getEmployees,
+  getEmployeeById,
   updateEmployee,
-  deleteEmployee
+  deleteEmployee,
 };

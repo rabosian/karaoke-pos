@@ -2,24 +2,24 @@ import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
-  Grid,
-  Paper,
-  TextField,
-  Select,
-  MenuItem,
-  Button,
+  IconButton,
   Alert,
+  Modal,
 } from "@mui/material";
+import AddIcon from "@mui/icons-material/AddCircle";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import { DataGrid } from "@mui/x-data-grid";
 import api from "../../../api";
 import Sidebar from "../../../components/Sidebar";
+import EmployeesInput from "./EmployeesInput";
 
 const EmployeesPage = () => {
   const [users, setUsers] = useState([]);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [role, setRole] = useState("");
   const [error, setError] = useState("");
+  const [selected, setSelected] = useState(0);
+  const [openModal, setOpenModal] = useState(false);
+  const [msg, setMsg] = useState("");
 
   const getEmployees = async () => {
     try {
@@ -40,10 +40,12 @@ const EmployeesPage = () => {
     }
   };
 
-  const addEmployee = async (e) => {
+  const addEmployee = async (username, password) => {
     try {
-      let body = { username, password };
-      let response = await api.post("/employees/signup", body);
+      let response = await api.post("/employees/signup", {
+        username,
+        password,
+      });
       let data = response.data;
       setUsers((prev) => [
         ...prev,
@@ -54,23 +56,99 @@ const EmployeesPage = () => {
           createdAt: data.createdAt.slice(0, 10),
         },
       ]);
-      setUsername("")
-      setPassword("")
+      setMsg("Employee added successfully");
+      setOpenModal(false);
+
     } catch (err) {
       console.log(err);
       setError(err.response.data);
     }
   };
 
+  const updateEmployee = async (username, password) => {
+    try {
+      let response = await api.put(`/employees/update/${selected}`, {
+        username,
+        password,
+      });
+      console.log(response);
+      getEmployees();
+      setMsg("Employee updated successfully");
+      setOpenModal(false);
+
+    } catch (err) {
+      console.log(err);
+      setError(err.response.data);
+    }
+  };
+
+  const deleteEmployee = async (id) => {
+    try {
+      await api.delete(`/employees/delete/${id}`);
+      setMsg("Employee deleted successfully");
+      getEmployees();
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    if (msg) {
+      setTimeout(() => {
+        setMsg("");
+      }, 2000);
+    } else if (error) {
+      setTimeout(() => {
+        setError("");
+      }, 2000);
+    }
+  }, [msg, error]);
+
   useEffect(() => {
     getEmployees();
   }, []);
 
+  const handleModelDelete = (e, cellValues) => {
+    if (window.confirm("delete this employee?")) {
+      deleteEmployee(cellValues.id);
+    }
+  };
+
+  const handleModelEdit = (e, cellValues) => {
+    setSelected(cellValues.id);
+    setOpenModal(true);
+  };
+
   const columns = [
-    { field: "id", headerName: "ID", width: 90 },
+    { field: "id", headerName: "ID", width: 60 },
     { field: "username", headerName: "Username", width: 130 },
     { field: "role", headerName: "Role", width: 70 },
-    { field: "createdAt", headerName: "Created At", width: 120 },
+    { field: "createdAt", headerName: "Created At", width: 100 },
+    {
+      field: "actions",
+      headerName: "Actions",
+      width: 100,
+      renderCell: (cellValues) => {
+        return (
+          <>
+            <IconButton
+              onClick={(e) => {
+                handleModelDelete(e, cellValues);
+              }}
+            >
+              <DeleteIcon />
+            </IconButton>
+            <IconButton
+              onClick={(e) => {
+                handleModelEdit(e, cellValues);
+              }}
+            >
+              <EditIcon />
+            </IconButton>
+          </>
+        );
+      },
+    },
   ];
 
   const rows = users.map((user) => ({
@@ -86,61 +164,42 @@ const EmployeesPage = () => {
       <Typography variant="h3" sx={{ textAlign: "center", my: 3 }}>
         Manage Employees
       </Typography>
-      <Box sx={{ display: "flex", justifyContent: "center" }}>
-        <Box sx={{ height: 700, width: "550px" }}>
-          <DataGrid
-            rows={rows}
-            columns={columns}
-            pageSize={10}
-            rowsPerPageOptions={[10]}
-            checkboxSelection
-            disableSelectionOnClick
-          />
-        </Box>
-        <Box sx={{ height: 400, width: "50%" }}>
-          <Grid align="center">
-            <h4>add employee</h4>
-            <Paper sx={{ padding: 4, width: 350 }}>
-              {error && <Alert severity="error">{error}</Alert>}
-              <TextField
-                required
-                variant="standard"
-                fullWidth
-                value={username}
-                label="Username"
-                onChange={(e) => setUsername(e.target.value)}
-              />
-              <TextField
-                required
-                variant="standard"
-                fullWidth
-                value={password}
-                label="Password"
-                onChange={(e) => setPassword(e.target.value)}
-              />
-              <Select
-                sx={{ mt: 2, width: "100px" }}
-                size="small"
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-              >
-                <MenuItem key="1" value="admin">
-                  admin
-                </MenuItem>
-                <MenuItem key="2" value="employee">
-                  employee
-                </MenuItem>
-              </Select>
-              <Button
-                variant="contained"
-                sx={{ mt: 2, display: "block" }}
-                style={{ backgroundColor: "#11262f" }}
-                onClick={addEmployee}
-              >
-                Add
-              </Button>
-            </Paper>
-          </Grid>
+      <Box
+        sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+      >
+        {msg && (
+          <Alert severity="success" sx={{ width: "500px" }}>
+            {msg}
+          </Alert>
+        )}
+        <IconButton
+          onClick={() => {
+            setOpenModal(true);
+            setSelected(0);
+          }}
+        >
+          <AddIcon fontSize="large" color="success" />
+        </IconButton>
+
+        <Box sx={{ display: "flex", justifyContent: "center", my: 5 }}>
+          <Box sx={{ height: 700, width: "630px" }}>
+            <DataGrid
+              rows={rows}
+              columns={columns}
+              pageSize={10}
+              rowsPerPageOptions={[10]}
+              checkboxSelection
+              disableSelectionOnClick
+            />
+          </Box>
+          <Modal open={openModal} onClose={() => setOpenModal(false)}>
+            <EmployeesInput
+              addEmployee={addEmployee}
+              updateEmployee={updateEmployee}
+              selected={selected}
+              serverError={error}
+            />
+          </Modal>
         </Box>
       </Box>
     </Box>

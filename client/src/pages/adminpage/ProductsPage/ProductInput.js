@@ -46,7 +46,7 @@ const ProductInput = ({ categories, addProduct, selected, updateProduct }) => {
       stock === "" ||
       selectedCategory === ""
     ) {
-      setError("fill cannot be empty");
+      setError("field cannot be empty");
       return;
     } else {
       addProduct(name, price, stock, selectedCategory);

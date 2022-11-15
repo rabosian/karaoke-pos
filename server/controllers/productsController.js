@@ -37,9 +37,13 @@ const products_post = async (req, res) => {
 const products_update = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, price, stock, categoryId } = req.body;
+    const { name, price, stock, categories_id } = req.body;
     await Products.update(
-      { name: name, price: price, stock: stock, categoryId: categoryId },
+      { name: name,
+        price: price,
+        stock: stock,
+        categories_id: categories_id
+      },
       {
         where: {
           id: id,
@@ -66,13 +70,14 @@ const products_delete = async (req, res) => {
   }
 };
 
+
 const findProductById = async (req, res) => {
+  const { id } = req.params;
   try {
-    let { id } = req.params;
-    const product = await Products.findByPk(id, {
-      include: ["category"],
-    });
-    res.send(product);
+    const allProducts = await Products.findByPk(id, {
+      include: ["category"]
+    })
+    res.json(allProducts)
   } catch (error) {
     console.log(error);
   }

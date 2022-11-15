@@ -9,6 +9,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    // legalName: {
+    //   type: DataTypes.STRING,
+    //   allowNull: false,
+    // },
   });
   return Employees;
 };

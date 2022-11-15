@@ -2,8 +2,8 @@ import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
   username: "",
-  isLogin: false
-  // role: ""
+  isLogin: false,
+  role: "ADMIN"
 }
 
 
@@ -14,6 +14,7 @@ const authSlice = createSlice({
     loginSuccess: (state, action) => {
       state.username = action.payload.username
       state.isLogin = true
+      state.role = "ADMIN"
     },
     loginFailed: (state) => {
       state.username = ""
@@ -22,6 +23,7 @@ const authSlice = createSlice({
     logoutSuccess: (state) => {
         state.username = ""
         state.isLogin = false
+        state.role = ""
     }
   },
 })

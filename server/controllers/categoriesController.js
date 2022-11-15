@@ -89,11 +89,12 @@ const findCategoryById = async (req, res) => {
   }
 }
 
+
 module.exports = {
   categories_post,
   categories_get,
   categories_update,
   categories_delete,
   categories_getAllProduct,
-  findCategoryById,
+  findCategoryById
 };

@@ -6,7 +6,7 @@ const db = require("./models");
 const PORT = process.env.PORT || 4000;
 
 // routes
-const userRoutes = require("./routes/userRoutes");
+const authRoutes = require("./routes/authRoutes");
 const categoriesRoutes = require("./routes/categoriesRoutes")
 const productsRoutes = require("./routes/productsRoutes")
 
@@ -28,7 +28,7 @@ db.sequelize.sync().then(() => {
 });
 
 //routes for the user API
-app.use("/api/employees", userRoutes);
+app.use("/api/employees", authRoutes);
 app.use("/api/categories", categoriesRoutes);
 app.use("/api/products", productsRoutes);
 

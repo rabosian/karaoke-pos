@@ -13,7 +13,6 @@ const products_get = async (req, res) => {
   }
 };
 
-
 const products_post = async (req, res) => {
   try {
     const { name, price, stock, categoryId } = req.body;
@@ -21,14 +20,14 @@ const products_post = async (req, res) => {
       name,
       price,
       stock,
-      categoryId
+      categoryId,
     };
-    //saving the products
+    // saving the products
     const products = await Products.create(data);
     if (products) {
       return res.status(201).json(products);
     } else {
-      return res.status(409).json( {message : "Product created fail"} );
+      return res.status(409).json({ message: "Product created fail" });
     }
   } catch (error) {
     console.log(error);
@@ -38,12 +37,12 @@ const products_post = async (req, res) => {
 const products_update = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, price, stock, categoryId } = req.body;
+    const { name, price, stock, categories_id } = req.body;
     await Products.update(
       { name: name,
         price: price,
         stock: stock,
-        categoryId: categoryId
+        categories_id: categories_id
       },
       {
         where: {
@@ -80,14 +79,14 @@ const findProductById = async (req, res) => {
     })
     res.json(allProducts)
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
-}
+};
 
 module.exports = {
   products_get,
   products_post,
   products_update,
   products_delete,
-  findProductById
+  findProductById,
 };

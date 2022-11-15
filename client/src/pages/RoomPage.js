@@ -5,6 +5,8 @@ import styled from "styled-components";
 import Menu from '../components/Menu/Menu'
 import Ticket from '../components/Ticket/Ticket'
 
+import RoomCard from '../components/RoomCard/RoomCard'
+
 // styled.button`
 // //  <button> HTML 엘리먼트에 대한 스타일 정의
 // `;
@@ -45,7 +47,7 @@ const RoomPage = () => {
   const [ticketProducts, setTicketProducts] = useState([])
   const { roomId } = useParams();
 
-  
+
   const addProducts = (item) => {        
     setTicketProducts(      
       [...ticketProducts, item]

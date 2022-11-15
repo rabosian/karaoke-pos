@@ -27,7 +27,6 @@ const ButtonStyled = styled(Button)`
 
 
 const Menu = ({ addProducts }) => {
-  const [value, setValue] = useState(0);
   const [ categoryId, setCategoryId ] = useState(3);
   const [ categories, setCategories ] = useState([])
   const [ products, setProducts ] = useState([]);
@@ -38,7 +37,7 @@ const Menu = ({ addProducts }) => {
   };
 
   const handleChange = (event, newValue) => {
-    setValue(newValue);
+    setCategoryId(newValue);
   };
 
   const categoryFetch = async () => {
@@ -81,7 +80,7 @@ const Menu = ({ addProducts }) => {
   return (
     <div>
       <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
-        <Tabs value={value} onChange={handleChange} centered>
+        <Tabs value={categoryId-1} onChange={handleChange} centered>
         {categories?.map((category) => {
           return (
             <Tab label={category[0]} onClick={() => {setCategoryId(category[1])}}  />

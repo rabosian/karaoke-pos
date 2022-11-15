@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-  const WorkHours = sequelize.define("workHours", {
+  const WorkHours = sequelize.define("work_hours", {
     startTime: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,

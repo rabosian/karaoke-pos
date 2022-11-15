@@ -5,6 +5,7 @@ import LoginPage from "./pages/LoginPage";
 import RoomCard from "./components/RoomCard/RoomCard";
 import EmployeesPage from "./pages/adminpage/EmployeesPage/EmployeesPage";
 import ProductsPage from "./pages/adminpage/ProductsPage/ProductsPage";
+import ShiftPage from "./pages/adminpage/ShiftPage";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path="/room/:roomId" element={<RoomCard />}></Route>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/manage-employees" element={<EmployeesPage />} />
+        <Route path="/manage-shift" element={<ShiftPage />} />
         <Route path="/manage-products" element={<ProductsPage />} />
       </Routes>
     </div>

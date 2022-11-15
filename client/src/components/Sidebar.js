@@ -29,6 +29,7 @@ const Sidebar = () => {
     "Manage Employees",
     "Manage Products",
     "Manage Rooms",
+    "Manage Shift"
   ];
   const sidebar = (
     <Box

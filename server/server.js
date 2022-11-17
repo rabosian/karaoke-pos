@@ -9,6 +9,7 @@ const PORT = process.env.PORT || 4000;
 const authRoutes = require("./routes/authRoutes");
 const categoriesRoutes = require("./routes/categoriesRoutes")
 const productsRoutes = require("./routes/productsRoutes")
+const roomsRoutes = require("./routes/roomsRoutes")
 
 
 const app = express();
@@ -31,6 +32,7 @@ db.sequelize.sync().then(() => {
 app.use("/api/employees", authRoutes);
 app.use("/api/categories", categoriesRoutes);
 app.use("/api/products", productsRoutes);
+app.use("/api/rooms", roomsRoutes);
 
 //listening to server connection
 app.listen(PORT, () => console.log(`Server is connected on ${PORT}`));

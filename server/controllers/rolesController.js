@@ -2,7 +2,7 @@ const db = require("../models");
 
 const Roles = db.roles
 
-const Roles_get = async (req, res) => {
+const roles_get = async (req, res) => {
   try {
     const Roles = await Roles.findAll();
     res.json(Roles);
@@ -11,7 +11,7 @@ const Roles_get = async (req, res) => {
   }
 };
 
-const Roles_post = async (req, res) => {
+const roles_post = async (req, res) => {
   try {
     const { name } = req.body;
     const role = await Roles.create(name);
@@ -26,7 +26,7 @@ const Roles_post = async (req, res) => {
   }
 };
 
-const Roles_update = async (req, res) => {
+const roles_update = async (req, res) => {
   try {
     const { id } = req.params; // id 
     const { name } = req.body; // input
@@ -42,7 +42,7 @@ const Roles_update = async (req, res) => {
   }
 };
 
-const Roles_delete = async (req, res) => {
+const roles_delete = async (req, res) => {
   try {
     const { id } = req.params;
     await Roles.destroy({
@@ -58,8 +58,8 @@ const Roles_delete = async (req, res) => {
 
 
 module.exports = {
-  Roles_post,
-  Roles_get,
-  Roles_update,
-  Roles_delete,
+  roles_post,
+  roles_get,
+  roles_update,
+  roles_delete,
 };

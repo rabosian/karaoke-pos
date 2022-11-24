@@ -1,6 +1,6 @@
 const {Sequelize, DataTypes} = require('sequelize')
 
-const sequelize = new Sequelize('karaoke', 'postgres', process.env.secretPassword, {
+const sequelize = new Sequelize('karaoke', 'jaeyeon', process.env.secretPassword, {
   host: 'localhost',
   dialect: 'postgres'
 });

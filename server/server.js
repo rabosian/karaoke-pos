@@ -10,6 +10,8 @@ const authRoutes = require("./routes/authRoutes");
 const categoriesRoutes = require("./routes/categoriesRoutes")
 const productsRoutes = require("./routes/productsRoutes")
 const roomsRoutes = require("./routes/roomsRoutes")
+const rolesRoutes = require("./routes/rolesRoutes")
+const workHourRoutes = require("./routes/workHourRoutes")
 
 
 const app = express();
@@ -33,6 +35,8 @@ app.use("/api/employees", authRoutes);
 app.use("/api/categories", categoriesRoutes);
 app.use("/api/products", productsRoutes);
 app.use("/api/rooms", roomsRoutes);
+app.use("/api/roles", rolesRoutes);
+app.use("/api/workhour", workHourRoutes);
 
 //listening to server connection
 app.listen(PORT, () => console.log(`Server is connected on ${PORT}`));

@@ -12,9 +12,8 @@ import {
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import styles from "./HomePage.module.css";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
 import RoomCard from "../../components/RoomCard/RoomCard";
 import Sidebar from "../../components/Sidebar";
 
@@ -26,9 +25,15 @@ import Sidebar from "../../components/Sidebar";
 const HomePage = () => {
   const auth = useSelector((state) => state.auth);
 
+  useEffect(() => {
+    console.log("redux: ", auth)
+  }, [])
+
   return (
     <div className={styles.screen}>
       <Sidebar />
+      <Typography variant="h6">employee: {auth && auth.username}</Typography>
+
       <Grid container justifyContent="center" sx={{ mt: 5 }}>
         <Typography variant="h4">Dolphin Karaoke</Typography>
       </Grid>

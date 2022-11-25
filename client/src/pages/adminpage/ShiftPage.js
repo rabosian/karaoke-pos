@@ -39,8 +39,9 @@ const EmployeesPage = () => {
     { field: "id", headerName: "ID", width: 60 },
     { field: "username", headerName: "Username", width: 130 },
     { field: "role", headerName: "Role", width: 70 },
-    // weekly work hours
-    { field: "createdAt", headerName: "weekly work hours", width: 160 },
+    { field: "createdAt", headerName: "createdAt", width: 120 },
+    // weekly hours, 
+    // { field: "createdAt", headerName: "weekly work hours", width: 160 },
 
   ];
 
@@ -61,7 +62,7 @@ const EmployeesPage = () => {
         sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
       >
         <Box sx={{ display: "flex", justifyContent: "center", my: 5 }}>
-          <Box sx={{ height: 700, width: "630px" }}>
+          <Box sx={{ height: 700, width: "830px" }}>
             <DataGrid
               rows={rows}
               columns={columns}

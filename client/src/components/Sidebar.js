@@ -10,12 +10,29 @@ import {
   IconButton,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import { useSelector } from "react-redux";
-import { convertLength } from "@mui/material/styles/cssUtils";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import api from "../api";
+import { logoutSuccess } from "../redux/reducers/authReducer";
 
 const Sidebar = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const auth = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const userLogout = async () => {
+    if (window.confirm("Are you sure you want to logout/clockout?")) {
+      try {
+        await api.get("/employees/logout");
+        navigate("/")
+        dispatch(logoutSuccess());
+        console.log("auth: ", auth);
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  };
 
   // sidebar control
   const toggleDrawer = (open) => (e) => {
@@ -29,7 +46,7 @@ const Sidebar = () => {
     "Manage Employees",
     "Manage Products",
     "Manage Rooms",
-    "Manage Shift"
+    "Manage Shift",
   ];
   const sidebar = (
     <Box
@@ -41,26 +58,33 @@ const Sidebar = () => {
         {auth.role === "ADMIN" ? (
           adminMenu.map((menu) => {
             if (menu === "Home") {
-              return (<ListItem key={menu} disablePadding>
-                <ListItemButton component="a" href="/">
-                  <ListItemText primary={menu} />
-                </ListItemButton>
-              </ListItem>);
+              return (
+                <ListItem key={menu} disablePadding>
+                  <ListItemButton onClick={() => navigate("/")}>
+                    <ListItemText primary={menu} />
+                  </ListItemButton>
+                </ListItem>
+              );
             } else {
-              return (<ListItem key={menu} disablePadding>
-                <ListItemButton
-                  component="a"
-                  href={menu.toLowerCase().replace(" ", "-")}
-                >
-                  <ListItemText primary={menu} />
-                </ListItemButton>
-              </ListItem>);
+              return (
+                <ListItem key={menu} disablePadding>
+                  <ListItemButton
+                    component="a"
+                    onClick={() => navigate(`/${menu.toLowerCase().replace(" ", "-")}`)}
+                  >
+                    <ListItemText primary={menu} />
+                  </ListItemButton>
+                </ListItem>
+              );
             }
           })
         ) : (
           <ListItemText>admin access ONLY</ListItemText>
         )}
         <Divider />
+        <ListItemText disablePadding>
+          <ListItemButton onClick={userLogout}>Logout</ListItemButton>
+        </ListItemText>
       </List>
     </Box>
   );
